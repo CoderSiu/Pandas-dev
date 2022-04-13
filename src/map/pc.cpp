@@ -6630,7 +6630,7 @@ bool pc_steal_item(struct map_session_data *sd,struct block_list *bl, uint16 ski
 	}
 
 	// base skill success chance (percentual)
-	rate = (sd_status->dex - md_status->dex)/2 + skill_lv*6 + 4;
+	rate = (int)((sd_status->dex - md_status->dex)) / 2 + skill_lv * 6 + 4;
 	rate += sd->bonus.add_steal_rate;
 
 	if( rate < 1
