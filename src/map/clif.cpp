@@ -23468,55 +23468,59 @@ void clif_parse_refineui_refine( int fd, struct map_session_data* sd ){
 /**
 * Extended Vending system [Lilith]
 **/
+/**
+* Extended Vending system [Lilith]
+**/
 int clif_vend(struct map_session_data* sd, int skill_lv) {
-	+
-		nullpo_ret(sd);
-	+
-		int fd = sd->fd;
-	+
-		if (!session_isActive(fd))
-			return 0;
-	+
-		WFIFOHEAD(fd, sizeof(struct PACKET_ZC_MAKINGARROW_LIST) + (itemdb_vending.size() + 2) * sizeof(struct PACKET_ZC_MAKINGARROW_LIST_sub));
+
+	nullpo_ret(sd);
+
+	int fd = sd->fd;
+
+	if (!session_isActive(fd))
+		return 0;
+
+	WFIFOHEAD(fd, sizeof(struct PACKET_ZC_MAKINGARROW_LIST) + (itemdb_vending.size() + 2) * sizeof(struct PACKET_ZC_MAKINGARROW_LIST_sub));
 	struct PACKET_ZC_MAKINGARROW_LIST* p = (struct PACKET_ZC_MAKINGARROW_LIST*)WFIFOP(fd, 0);
 	p->packetType = HEADER_ZC_MAKINGARROW_LIST;
-	+
-		int i, count = 0;
+
+	int i, count = 0;
 	if (battle_config.item_zeny && itemdb_exists(battle_config.item_zeny)) {
 		p->items[count].itemId = client_nameid(battle_config.item_zeny);
 		count++;
 	}
-	+
-		if (battle_config.item_cash && itemdb_exists(battle_config.item_cash)) {
-			p->items[count].itemId = client_nameid(battle_config.item_cash);
+
+	if (battle_config.item_cash && itemdb_exists(battle_config.item_cash)) {
+		p->items[count].itemId = client_nameid(battle_config.item_cash);
+		count++;
+	}
+
+	for (const auto& it : itemdb_vending) {
+		t_itemid nameid = it.first;
+
+		if (!item_db.exists(nameid))
+			continue;
+
+		if (nameid != battle_config.item_zeny && nameid != battle_config.item_cash) {
+			p->items[count].itemId = client_nameid(nameid);
 			count++;
 		}
-	+
-		for (const auto& it : itemdb_vending) {
-			t_itemid nameid = it.first;
-			+
-				if (!item_db.exists(nameid))
-					continue;
-			+
-				if (nameid != battle_config.item_zeny && nameid != battle_config.item_cash) {
-					p->items[count].itemId = client_nameid(nameid);
-					count++;
-				}
-		}
-	+
-		p->packetLength = sizeof(struct PACKET_ZC_MAKINGARROW_LIST) + count * sizeof(struct PACKET_ZC_MAKINGARROW_LIST_sub);
+	}
+
+	p->packetLength = sizeof(struct PACKET_ZC_MAKINGARROW_LIST) + count * sizeof(struct PACKET_ZC_MAKINGARROW_LIST_sub);
 	WFIFOSET(fd, p->packetLength);
-	+
-		if (count > 0) {
-			sd->menuskill_id = MC_VENDING;
-			sd->menuskill_val = skill_lv;
-		}
-		else {
-			clif_skill_fail(sd, MC_VENDING, USESKILL_FAIL_LEVEL, 0);
-			return 0;
-		}
+
+	if (count > 0) {
+		sd->menuskill_id = MC_VENDING;
+		sd->menuskill_val = skill_lv;
+	}
+	else {
+		clif_skill_fail(sd, MC_VENDING, USESKILL_FAIL_LEVEL, 0);
+		return 0;
+	}
 	return 1;
 }
+
 void clif_unequipall_reply( struct map_session_data* sd, bool failed ){
 #if PACKETVER_MAIN_NUM >= 20210818 || PACKETVER_RE_NUM >= 20211103
 	struct PACKET_ZC_TAKEOFF_EQUIP_ALL_ACK p = {};

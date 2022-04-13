@@ -19264,34 +19264,34 @@ void skill_identify(struct map_session_data *sd, int idx)
 	}
 	clif_item_identified(sd,idx,flag);
 
-	/**
-* Extended Vending system [Lilith]
-**/
-	int skill_vending(struct map_session_data* sd, t_itemid nameid) {
-		struct item_data* item;
-		char output[1024];
-		nullpo_ret(sd);
-		
-			if (!pc_can_give_items(sd) || (item = itemdb_exists(nameid)) == NULL) {
-				sd->state.prevend = 0;
-				sd->vend_loot = 0;
-				sd->state.workinprogress = WIP_DISABLE_NONE;
-				clif_skill_fail(sd, MC_VENDING, USESKILL_FAIL_LEVEL, 0);
-			}
-			else {
-				sd->vend_loot = nameid;
-				sd->state.prevend = 1;
-				clif_openvendingreq(sd, 2 + sd->vend_lvl);
-				sprintf(output, msg_txt(sd, 1594), item->ename.c_str());
-				clif_messagecolor(&sd->bl, color_table[COLOR_CYAN], output, false, SELF);
-			}
-		return 0;
-	}
-	
+
 #ifdef Pandas_NpcEvent_IDENTIFY
 	pc_setreg(sd, add_str("@identify_idx"), idx);
 	npc_script_event(sd, NPCE_IDENTIFY);
 #endif // Pandas_NpcEvent_IDENTIFY
+}
+/**
+* Extended Vending system [Lilith]
+**/
+int skill_vending(struct map_session_data* sd, t_itemid nameid) {
+	struct item_data* item;
+	char output[1024];
+	nullpo_ret(sd);
+
+	if (!pc_can_give_items(sd) || (item = itemdb_exists(nameid)) == NULL) {
+		sd->state.prevend = 0;
+		sd->vend_loot = 0;
+		sd->state.workinprogress = WIP_DISABLE_NONE;
+		clif_skill_fail(sd, MC_VENDING, USESKILL_FAIL_LEVEL, 0);
+	}
+	else {
+		sd->vend_loot = nameid;
+		sd->state.prevend = 1;
+		clif_openvendingreq(sd, 2 + sd->vend_lvl);
+		sprintf(output, msg_txt(sd, 1594), item->ename.c_str());
+		clif_messagecolor(&sd->bl, color_table[COLOR_CYAN], output, false, SELF);
+	}
+	return 0;
 }
 
 /*==========================================

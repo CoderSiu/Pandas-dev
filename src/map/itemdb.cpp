@@ -3761,37 +3761,36 @@ bool RandomOptionGroupDatabase::option_get_id(std::string name, uint16 &id) {
 const std::string ItemVendingDatabase::getDefaultLocation() {
 	return std::string(db_path) + "/item_vending_db.yml";
 }
-+
+
 /**
  * Reads and parses an entry from the item_group_db.
  * @param node: YAML node containing the entry.
  * @return count of successfully parsed rows
  */
-	uint64 ItemVendingDatabase::parseBodyNode(const YAML::Node & node) {
+uint64 ItemVendingDatabase::parseBodyNode(const YAML::Node& node) {
 	std::string item_name;
-	+
-		if (!this->asString(node, "Item", item_name))
-			return 0;
+
+	if (!this->asString(node, "Item", item_name))
+		return 0;
 
 	std::shared_ptr<item_data> item = item_db.search_aegisname(item_name.c_str());
-	+
-		if (item == nullptr) {
-			this->invalidWarning(node["Item"], "Unknown Item %s.\n", item_name.c_str());
-			return 0;
-		}
-	+
-		std::shared_ptr<s_item_vend_db> vendb = this->find(item->nameid);
-	+
-		if (vendb != nullptr) {
-			vendb = std::make_shared<s_item_vend_db>();
-			vendb->nameid = item->nameid;
-		}
-		else
-			this->put(item->nameid, vendb);
-	+
-		return 1;
+
+	if (item == nullptr) {
+		this->invalidWarning(node["Item"], "Unknown Item %s.\n", item_name.c_str());
+		return 0;
+	}
+
+	std::shared_ptr<s_item_vend_db> vendb = this->find(item->nameid);
+
+	if (vendb != nullptr) {
+		vendb = std::make_shared<s_item_vend_db>();
+		vendb->nameid = item->nameid;
+	}
+	else
+		this->put(item->nameid, vendb);
+
+	return 1;
 }
-+
 #ifdef Pandas_YamlBlastCache_RandomOptionGroupDatabase
 //************************************
 // Method:      doSerialize
