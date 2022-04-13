@@ -144,7 +144,8 @@ static int bl_list_count = 0;
 
 #ifndef MAP_MAX_MSG
 #ifndef Pandas_Message_Conf
-	#define MAP_MAX_MSG 1550
+	//#define MAP_MAX_MSG 1550
+	#define MAP_MAX_MSG 1650
 #else
 	// 此处根据 ALL_EXTEND_MSG 的定义重新修改 MAP_MAX_MSG
 	#define MAP_MAX_MSG ALL_EXTEND_MSG
