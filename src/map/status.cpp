@@ -2750,6 +2750,10 @@ int status_damage(struct block_list *src,struct block_list *target,int64 dhp, in
 	}
 
 	status->hp = 0;
+
+
+	unit_stop_walking(target, USW_FORCE_STOP);
+
 	/** [Skotlex]
 	* NOTE: These dead functions should return:
 	* 0: Death cancelled, auto-revived.
